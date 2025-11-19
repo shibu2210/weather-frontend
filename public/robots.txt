@@ -1,0 +1,21 @@
+# robots.txt for Weather AQI
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://weather-aqi.vercel.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Specific bot rules
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
