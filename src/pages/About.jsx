@@ -141,7 +141,7 @@ const About = () => {
           </h2>
           <div className="flex flex-col sm:flex-row gap-4">
             <a 
-              href="https://github.com" 
+              href="https://github.com/shibu2210" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
@@ -150,7 +150,7 @@ const About = () => {
               <span className="font-medium text-gray-800 dark:text-white">GitHub</span>
             </a>
             <a 
-              href="mailto:contact@weatheraqi.com"
+              href="mailto:shivamwork.2210@gmail.com"
               className="flex items-center gap-3 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-6 py-3 rounded-lg transition-all duration-200 hover:scale-105"
             >
               <FiMail className="text-2xl text-blue-600 dark:text-blue-400" />
