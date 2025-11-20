@@ -103,27 +103,29 @@ export const WeatherProvider = ({ children }) => {
         console.log('Overriding WeatherAPI AQI with AQICN station data:', {
           stationUid,
           stationName: aqicnData.stationName,
-          weatherApiAqi: weatherData.current?.airQuality?.aqi,
+          weatherApiAqi: weatherData.current?.air_quality?.aqi,
           aqicnAqi: aqicnData.aqi
         })
         
-        // Ensure airQuality object exists
-        if (!weatherData.current.airQuality) {
-          weatherData.current.airQuality = {}
+        // Ensure air_quality object exists (note: underscore, not camelCase!)
+        if (!weatherData.current.air_quality) {
+          weatherData.current.air_quality = {}
         }
         
         // Override with accurate AQICN data
-        weatherData.current.airQuality.aqi = aqicnData.aqi
-        weatherData.current.airQuality.usEpaIndex = aqicnData.aqi
+        console.log('Before override - AQI:', weatherData.current.air_quality.aqi)
+        weatherData.current.air_quality.aqi = aqicnData.aqi
+        weatherData.current.air_quality.usEpaIndex = aqicnData.aqi
+        console.log('After override - AQI:', weatherData.current.air_quality.aqi)
         
         // Update pollutant data if available
         if (aqicnData.pollutants) {
-          if (aqicnData.pollutants.pm25) weatherData.current.airQuality.pm2_5 = aqicnData.pollutants.pm25
-          if (aqicnData.pollutants.pm10) weatherData.current.airQuality.pm10 = aqicnData.pollutants.pm10
-          if (aqicnData.pollutants.o3) weatherData.current.airQuality.o3 = aqicnData.pollutants.o3
-          if (aqicnData.pollutants.no2) weatherData.current.airQuality.no2 = aqicnData.pollutants.no2
-          if (aqicnData.pollutants.so2) weatherData.current.airQuality.so2 = aqicnData.pollutants.so2
-          if (aqicnData.pollutants.co) weatherData.current.airQuality.co = aqicnData.pollutants.co
+          if (aqicnData.pollutants.pm25) weatherData.current.air_quality.pm2_5 = aqicnData.pollutants.pm25
+          if (aqicnData.pollutants.pm10) weatherData.current.air_quality.pm10 = aqicnData.pollutants.pm10
+          if (aqicnData.pollutants.o3) weatherData.current.air_quality.o3 = aqicnData.pollutants.o3
+          if (aqicnData.pollutants.no2) weatherData.current.air_quality.no2 = aqicnData.pollutants.no2
+          if (aqicnData.pollutants.so2) weatherData.current.air_quality.so2 = aqicnData.pollutants.so2
+          if (aqicnData.pollutants.co) weatherData.current.air_quality.co = aqicnData.pollutants.co
         }
         
         // Store AQICN metadata for reference

@@ -69,10 +69,17 @@ export const getAqiByCoordinates = async (lat, lon) => {
 }
 
 export const getAqiByStationUid = async (uid) => {
-  const response = await weatherApi.get('/aqi/station', {
-    params: { uid }
-  })
-  return response.data
+  console.log('Calling /api/aqi/station with UID:', uid)
+  try {
+    const response = await weatherApi.get('/aqi/station', {
+      params: { uid }
+    })
+    console.log('Station API response:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('Error calling /api/aqi/station:', error.response?.status, error.response?.data || error.message)
+    throw error
+  }
 }
 
 export const searchAqiStations = async (keyword) => {
