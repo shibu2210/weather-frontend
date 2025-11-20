@@ -61,6 +61,20 @@ export const getWeatherByCoordinates = async (lat, lon) => {
   return response.data
 }
 
+export const getAqiByCoordinates = async (lat, lon) => {
+  const response = await weatherApi.get('/aqi/coordinates', {
+    params: { lat, lon }
+  })
+  return response.data
+}
+
+export const getAqiByStationUid = async (uid) => {
+  const response = await weatherApi.get('/aqi/station', {
+    params: { uid }
+  })
+  return response.data
+}
+
 export const searchAqiStations = async (keyword) => {
   const response = await weatherApi.get('/aqi/search', {
     params: { keyword }

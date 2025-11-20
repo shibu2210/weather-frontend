@@ -143,7 +143,9 @@ const SearchBar = () => {
       country: ''
     }
     addRecentSearch(locationData)
-    fetchWeatherByCoords(lat, lon, station.station.name)
+    // Pass the station UID to fetch the exact station's AQI data
+    // preserveLocationName = true to show the station name as the main location
+    fetchWeatherByCoords(lat, lon, station.station.name, station.uid, true)
     setQuery('')
     setSuggestions({ cities: [], stations: [], googlePlaces: [] })
     setShowSuggestions(false)
@@ -162,7 +164,8 @@ const SearchBar = () => {
           country: ''
         }
         addRecentSearch(locationData)
-        fetchWeatherByCoords(lat, lon, details.name)
+        // Pass true to preserve the Google Place name instead of WeatherAPI's geocoded name
+        fetchWeatherByCoords(lat, lon, details.name, null, true)
         setQuery('')
         setSuggestions({ cities: [], stations: [], googlePlaces: [] })
         setShowSuggestions(false)

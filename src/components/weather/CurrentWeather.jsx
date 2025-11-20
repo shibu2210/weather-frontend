@@ -26,10 +26,10 @@ const CurrentWeather = () => {
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1">
             {location.name}, {location.country}
           </h2>
-          {location.stationName && (
+          {location.aqiSource && (
             <p className="text-blue-100 text-xs md:text-sm mb-1 flex items-center gap-1">
               <span className="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-              AQI from: {location.stationName}
+              AQI from {location.aqiSource}
             </p>
           )}
           <p className="text-blue-100 text-sm md:text-base mb-4">{location.localtime}</p>

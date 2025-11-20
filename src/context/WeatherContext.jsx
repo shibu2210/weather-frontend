@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { getCurrentWeather, getForecast, getWeatherByCoordinates } from '../services/weatherService'
+import { getCurrentWeather, getForecast, getWeatherByCoordinates, getAqiByCoordinates, getAqiByStationUid } from '../services/weatherService'
 import { getLastLocation, setLastLocation, getUnits, setUnits as saveUnits } from '../services/storageService'
 import { DEFAULT_LOCATION } from '../utils/constants'
 
@@ -31,6 +31,12 @@ export const WeatherProvider = ({ children }) => {
         getForecast(locationQuery, 7)
       ])
       
+      // For regular city/location searches, show as WeatherAPI for clarity
+      // (even though backend merges AQICN data in the background)
+      if (weatherData.location) {
+        weatherData.location.aqiSource = 'WeatherAPI'
+      }
+      
       setCurrentWeather(weatherData)
       setForecast(forecastData)
       setLocation(weatherData.location)
@@ -43,19 +49,88 @@ export const WeatherProvider = ({ children }) => {
     }
   }
 
-  const fetchWeatherByCoords = async (lat, lon, stationName = null) => {
+  const fetchWeatherByCoords = async (lat, lon, locationName = null, stationUid = null, preserveLocationName = false) => {
     setLoading(true)
     setError(null)
     
     try {
-      const [weatherData, forecastData] = await Promise.all([
+      const promises = [
         getWeatherByCoordinates(lat, lon),
         getForecast(`${lat},${lon}`, 7)
-      ])
+      ]
       
-      // If station name provided, add it to location
-      if (stationName) {
-        weatherData.location.stationName = stationName
+      // If this is from an AQI station with UID, fetch the exact station's data
+      if (stationUid) {
+        promises.push(getAqiByStationUid(stationUid))
+      }
+      
+      const results = await Promise.all(promises)
+      const weatherData = results[0]
+      const forecastData = results[1]
+      const aqicnData = results[2] // Will be undefined if not fetched
+      
+      // If location name provided and we want to preserve it, override WeatherAPI's name
+      if (locationName) {
+        if (preserveLocationName) {
+          // Override the main location name (for Google Places and AQI stations)
+          weatherData.location.name = locationName
+          
+          // If no station UID, this is a Google Place, show as WeatherAPI
+          if (!stationUid) {
+            console.log('Setting aqiSource to WeatherAPI (Google Place)')
+            weatherData.location.aqiSource = 'WeatherAPI'
+          } else {
+            console.log('Station UID exists, will set aqiSource to AQICN later')
+          }
+        } else {
+          // Add as station name (legacy, not currently used)
+          weatherData.location.stationName = locationName
+        }
+      }
+      
+      // If we have AQICN data, override the weather API's AQI with accurate station data
+      if (aqicnData) {
+        console.log('Overriding WeatherAPI AQI with AQICN station data:', {
+          stationUid,
+          stationName: aqicnData.stationName,
+          weatherApiAqi: weatherData.current?.airQuality?.aqi,
+          aqicnAqi: aqicnData.aqi
+        })
+        
+        // Ensure airQuality object exists
+        if (!weatherData.current.airQuality) {
+          weatherData.current.airQuality = {}
+        }
+        
+        // Override with accurate AQICN data
+        weatherData.current.airQuality.aqi = aqicnData.aqi
+        weatherData.current.airQuality.usEpaIndex = aqicnData.aqi
+        
+        // Update pollutant data if available
+        if (aqicnData.pollutants) {
+          if (aqicnData.pollutants.pm25) weatherData.current.airQuality.pm2_5 = aqicnData.pollutants.pm25
+          if (aqicnData.pollutants.pm10) weatherData.current.airQuality.pm10 = aqicnData.pollutants.pm10
+          if (aqicnData.pollutants.o3) weatherData.current.airQuality.o3 = aqicnData.pollutants.o3
+          if (aqicnData.pollutants.no2) weatherData.current.airQuality.no2 = aqicnData.pollutants.no2
+          if (aqicnData.pollutants.so2) weatherData.current.airQuality.so2 = aqicnData.pollutants.so2
+          if (aqicnData.pollutants.co) weatherData.current.airQuality.co = aqicnData.pollutants.co
+        }
+        
+        // Store AQICN metadata for reference
+        weatherData.aqicnData = {
+          stationName: aqicnData.stationName,
+          category: aqicnData.category,
+          dominantPollutant: aqicnData.dominantPollutant,
+          lastUpdated: aqicnData.lastUpdated
+        }
+        
+        // Mark that user explicitly selected an AQI monitoring station
+        console.log('Setting aqiSource to AQICN (monitoring station)')
+        weatherData.location.aqiSource = 'AQICN'
+      } else if (stationUid) {
+        // If we have a station UID but no AQICN data (error case), still mark as AQICN
+        console.log('Station UID exists but no AQICN data, still setting to AQICN')
+        weatherData.location.aqiSource = 'AQICN'
       }
       
       setCurrentWeather(weatherData)
