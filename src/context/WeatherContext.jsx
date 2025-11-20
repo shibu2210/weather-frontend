@@ -16,7 +16,7 @@ export const useWeather = () => {
 export const WeatherProvider = ({ children }) => {
   const [currentWeather, setCurrentWeather] = useState(null)
   const [forecast, setForecast] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // Start with true for initial load
   const [error, setError] = useState(null)
   const [location, setLocation] = useState(null)
   const [units, setUnits] = useState(getUnits())
@@ -82,9 +82,39 @@ export const WeatherProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    const lastLoc = getLastLocation()
-    const initialLocation = lastLoc?.name || DEFAULT_LOCATION
-    fetchWeatherData(initialLocation)
+    const initializeLocation = async () => {
+      const lastLoc = getLastLocation()
+      
+      // If user has a saved location, use it
+      if (lastLoc?.name) {
+        fetchWeatherData(lastLoc.name)
+        return
+      }
+      
+      // Otherwise, try to get user's current location
+      if ('geolocation' in navigator) {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              timeout: 5000,
+              maximumAge: 300000 // 5 minutes
+            })
+          })
+          
+          const { latitude, longitude } = position.coords
+          fetchWeatherByCoords(latitude, longitude)
+        } catch (error) {
+          // If geolocation fails, fall back to default location
+          console.log('Geolocation not available, using default location')
+          fetchWeatherData(DEFAULT_LOCATION)
+        }
+      } else {
+        // Geolocation not supported, use default
+        fetchWeatherData(DEFAULT_LOCATION)
+      }
+    }
+    
+    initializeLocation()
   }, [])
 
   const value = {
