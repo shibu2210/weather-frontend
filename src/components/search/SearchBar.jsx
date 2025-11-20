@@ -137,6 +137,12 @@ const SearchBar = () => {
 
   const handleSelectStation = (station) => {
     const [lat, lon] = station.station.geo
+    console.log('Selected AQI station:', {
+      name: station.station.name,
+      uid: station.uid,
+      aqi: station.aqi,
+      coordinates: [lat, lon]
+    })
     const locationData = {
       name: station.station.name,
       region: 'AQI Station',

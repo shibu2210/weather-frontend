@@ -61,13 +61,23 @@ export const WeatherProvider = ({ children }) => {
       
       // If this is from an AQI station with UID, fetch the exact station's data
       if (stationUid) {
-        promises.push(getAqiByStationUid(stationUid))
+        console.log('Fetching AQICN data for station UID:', stationUid)
+        promises.push(
+          getAqiByStationUid(stationUid).catch(err => {
+            console.error('Failed to fetch AQICN data by UID:', err)
+            return null // Return null instead of failing
+          })
+        )
+      } else {
+        console.log('No station UID provided, skipping AQICN fetch')
       }
       
       const results = await Promise.all(promises)
       const weatherData = results[0]
       const forecastData = results[1]
-      const aqicnData = results[2] // Will be undefined if not fetched
+      const aqicnData = results[2] // Will be undefined/null if not fetched or failed
+      
+      console.log('AQICN data received:', aqicnData)
       
       // If location name provided and we want to preserve it, override WeatherAPI's name
       if (locationName) {
