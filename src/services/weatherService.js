@@ -50,7 +50,39 @@ export const searchLocation = async (query) => {
   const response = await weatherApi.get('/weather/search', {
     params: { query }
   })
+  // Handle both array and object responses
+  return Array.isArray(response.data) ? response.data : (response.data.value || response.data || [])
+}
+
+export const getWeatherByCoordinates = async (lat, lon) => {
+  const response = await weatherApi.get('/weather/by-coordinates', {
+    params: { lat, lon }
+  })
   return response.data
+}
+
+export const searchAqiStations = async (keyword) => {
+  const response = await weatherApi.get('/aqi/search', {
+    params: { keyword }
+  })
+  return response.data
+}
+
+export const searchEnhanced = async (query) => {
+  try {
+    const [weatherResults, aqiResults] = await Promise.all([
+      searchLocation(query).catch(() => []),
+      searchAqiStations(query).catch(() => ({ data: [] }))
+    ])
+    
+    return {
+      cities: weatherResults || [],
+      stations: aqiResults.data || []
+    }
+  } catch (error) {
+    console.error('Enhanced search error:', error)
+    return { cities: [], stations: [] }
+  }
 }
 
 export const checkHealth = async () => {

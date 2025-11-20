@@ -20,7 +20,8 @@ const AQICard = () => {
   }
 
   const aqi = currentWeather.current.air_quality
-  const aqiValue = calculateAQIFromPollutants(aqi)
+  // Use the actual AQI value from AQICN API if available, otherwise calculate from pollutants
+  const aqiValue = aqi.aqi || calculateAQIFromPollutants(aqi)
   const aqiLevel = getAQICategory(aqiValue)
   const recommendation = getAQIRecommendation(aqiValue)
 

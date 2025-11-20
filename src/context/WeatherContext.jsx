@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { getCurrentWeather, getForecast } from '../services/weatherService'
+import { getCurrentWeather, getForecast, getWeatherByCoordinates } from '../services/weatherService'
 import { getLastLocation, setLastLocation, getUnits, setUnits as saveUnits } from '../services/storageService'
 import { DEFAULT_LOCATION } from '../utils/constants'
 
@@ -43,6 +43,33 @@ export const WeatherProvider = ({ children }) => {
     }
   }
 
+  const fetchWeatherByCoords = async (lat, lon, stationName = null) => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const [weatherData, forecastData] = await Promise.all([
+        getWeatherByCoordinates(lat, lon),
+        getForecast(`${lat},${lon}`, 7)
+      ])
+      
+      // If station name provided, add it to location
+      if (stationName) {
+        weatherData.location.stationName = stationName
+      }
+      
+      setCurrentWeather(weatherData)
+      setForecast(forecastData)
+      setLocation(weatherData.location)
+      setLastLocation(weatherData.location)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch weather data')
+      console.error('Error fetching weather by coordinates:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const refreshWeather = () => {
     if (location) {
       fetchWeatherData(location.name)
@@ -68,6 +95,7 @@ export const WeatherProvider = ({ children }) => {
     location,
     units,
     fetchWeatherData,
+    fetchWeatherByCoords,
     refreshWeather,
     changeUnits
   }

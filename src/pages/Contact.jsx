@@ -18,7 +18,7 @@ const Contact = () => {
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto mb-12">
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 sm:p-12 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8 text-center">
               Get in touch
