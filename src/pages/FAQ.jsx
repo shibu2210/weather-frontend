@@ -21,6 +21,10 @@ const FAQ = () => {
         {
           q: 'Where does the weather data come from?',
           a: 'Our weather data is provided by WeatherAPI.com, a reliable weather data service that aggregates information from multiple sources to ensure accuracy.'
+        },
+        {
+          q: 'Where does the air quality data come from?',
+          a: 'Air quality data comes from AQICN (World Air Quality Index Project), which provides real-time measurements from actual monitoring stations worldwide, backed by EPA and government agencies.'
         }
       ]
     },
@@ -188,7 +192,7 @@ const FAQ = () => {
 
       <footer className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm mt-auto py-6 border-t border-gray-200/50 dark:border-gray-700/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400">
-          <p className="text-sm">Weather data provided by WeatherAPI.com</p>
+          <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
           <p className="text-xs mt-2">© 2025 Weather AQI. All rights reserved.</p>
         </div>
       </footer>

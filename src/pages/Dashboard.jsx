@@ -102,7 +102,7 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="text-center text-gray-600 dark:text-gray-400">
-              <p className="text-sm">Weather data provided by WeatherAPI.com</p>
+              <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
               <p className="text-xs mt-1">© 2025 Weather AQI. All rights reserved.</p>
             </div>
           </div>

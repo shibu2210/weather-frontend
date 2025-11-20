@@ -181,20 +181,38 @@ const License = () => {
         {/* Attribution */}
         <div className="bg-gradient-to-br from-blue-500 to-cyan-600 dark:from-blue-900 dark:to-cyan-950 rounded-2xl p-6 sm:p-8 shadow-lg text-white mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-            Attribution
+            Data Attribution
           </h2>
-          <p className="text-blue-50 mb-4">
-            Weather data is provided by WeatherAPI.com. Please refer to their terms of service 
-            and attribution requirements when using this application.
-          </p>
-          <a 
-            href="https://www.weatherapi.com/terms.aspx" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
-          >
-            View WeatherAPI Terms
-          </a>
+          <div className="space-y-4">
+            <div>
+              <p className="text-blue-50 mb-2">
+                <strong>Weather Data:</strong> Provided by WeatherAPI.com. Please refer to their terms of service 
+                and attribution requirements when using this application.
+              </p>
+              <a 
+                href="https://www.weatherapi.com/terms.aspx" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                View WeatherAPI Terms
+              </a>
+            </div>
+            <div>
+              <p className="text-blue-50 mb-2">
+                <strong>Air Quality Data:</strong> Provided by AQICN (World Air Quality Index Project). 
+                Real-time measurements from monitoring stations worldwide.
+              </p>
+              <a 
+                href="https://aqicn.org/api/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                View AQICN API Info
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Back to Home */}
@@ -210,7 +228,7 @@ const License = () => {
 
       <footer className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm mt-auto py-6 border-t border-gray-200/50 dark:border-gray-700/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400">
-          <p className="text-sm">Weather data provided by WeatherAPI.com</p>
+          <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
           <p className="text-xs mt-2">© 2025 Weather AQI. All rights reserved.</p>
         </div>
       </footer>
