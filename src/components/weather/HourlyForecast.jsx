@@ -23,7 +23,7 @@ const HourlyForecast = () => {
               key={index}
               className="flex-shrink-0 bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center w-20 sm:w-24 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 hover:scale-105 cursor-pointer"
             >
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-2">
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-2 whitespace-nowrap">
                 {formatTime(hour.time)}
               </p>
               <img 

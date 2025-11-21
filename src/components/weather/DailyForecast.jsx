@@ -26,7 +26,7 @@ const DailyForecast = () => {
             >
               {/* Date */}
               <div className="w-16 sm:w-20 flex-shrink-0">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
                   {index === 0 ? 'Today' : formatDate(day.date)}
                 </p>
               </div>

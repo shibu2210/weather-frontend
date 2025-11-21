@@ -80,9 +80,43 @@ export const useGooglePlaces = () => {
     })
   }, [placesService])
 
+  const reverseGeocode = useCallback(async (lat, lng) => {
+    if (!isLoaded) {
+      return null
+    }
+
+    return new Promise((resolve) => {
+      const geocoder = new window.google.maps.Geocoder()
+      geocoder.geocode(
+        { location: { lat, lng } },
+        (results, status) => {
+          if (status === 'OK' && results && results.length > 0) {
+            // Find the most specific result (usually the first one)
+            // Prefer locality, sublocality, or neighborhood
+            const bestResult = results.find(r => 
+              r.types.includes('locality') || 
+              r.types.includes('sublocality') ||
+              r.types.includes('neighborhood')
+            ) || results[0]
+            
+            resolve({
+              name: bestResult.address_components[0]?.long_name || bestResult.formatted_address,
+              formatted_address: bestResult.formatted_address,
+              lat,
+              lng
+            })
+          } else {
+            resolve(null)
+          }
+        }
+      )
+    })
+  }, [isLoaded])
+
   return {
     isLoaded,
     searchPlaces,
-    getPlaceDetails
+    getPlaceDetails,
+    reverseGeocode
   }
 }

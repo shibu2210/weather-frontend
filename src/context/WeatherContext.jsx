@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { getCurrentWeather, getForecast, getWeatherByCoordinates, getAqiByCoordinates, getAqiByStationUid } from '../services/weatherService'
+import { getCurrentWeather, getForecast, getWeatherByCoordinates, getAqiByStationUid } from '../services/weatherService'
 import { getLastLocation, setLastLocation, getUnits, setUnits as saveUnits } from '../services/storageService'
 import { DEFAULT_LOCATION } from '../utils/constants'
 
@@ -31,10 +31,9 @@ export const WeatherProvider = ({ children }) => {
         getForecast(locationQuery, 7)
       ])
       
-      // For regular city/location searches, show as WeatherAPI for clarity
-      // (even though backend merges AQICN data in the background)
+      // Backend always merges AQICN data, so show AQICN as the source
       if (weatherData.location) {
-        weatherData.location.aqiSource = 'WeatherAPI'
+        weatherData.location.aqiSource = 'AQICN'
       }
       
       setCurrentWeather(weatherData)
@@ -85,13 +84,9 @@ export const WeatherProvider = ({ children }) => {
           // Override the main location name (for Google Places and AQI stations)
           weatherData.location.name = locationName
           
-          // If no station UID, this is a Google Place, show as WeatherAPI
-          if (!stationUid) {
-            console.log('Setting aqiSource to WeatherAPI (Google Place)')
-            weatherData.location.aqiSource = 'WeatherAPI'
-          } else {
-            console.log('Station UID exists, will set aqiSource to AQICN later')
-          }
+          // Backend always merges AQICN data, so always show AQICN
+          console.log('Setting aqiSource to AQICN (backend merges AQICN data)')
+          weatherData.location.aqiSource = 'AQICN'
         } else {
           // Add as station name (legacy, not currently used)
           weatherData.location.stationName = locationName
@@ -159,7 +154,25 @@ export const WeatherProvider = ({ children }) => {
 
   const refreshWeather = () => {
     if (location) {
-      fetchWeatherData(location.name)
+      // If we have a location with coordinates, use them for accuracy
+      if (location.lat && location.lon) {
+        fetchWeatherByCoords(location.lat, location.lon, location.name, null, true)
+      } else {
+        fetchWeatherData(location.name)
+      }
+    } else {
+      // If no location (error on initial load), try default location
+      const lastLoc = getLastLocation()
+      if (lastLoc?.name) {
+        // If saved location has coordinates, use them
+        if (lastLoc.lat && lastLoc.lon) {
+          fetchWeatherByCoords(lastLoc.lat, lastLoc.lon, lastLoc.name, null, true)
+        } else {
+          fetchWeatherData(lastLoc.name)
+        }
+      } else {
+        fetchWeatherData(DEFAULT_LOCATION)
+      }
     }
   }
 
@@ -174,30 +187,100 @@ export const WeatherProvider = ({ children }) => {
       
       // If user has a saved location, use it
       if (lastLoc?.name) {
-        fetchWeatherData(lastLoc.name)
+        console.log('Using saved location:', lastLoc.name)
+        // If saved location has coordinates, use them for better accuracy
+        if (lastLoc.lat && lastLoc.lon) {
+          console.log('Using saved coordinates:', lastLoc.lat, lastLoc.lon)
+          fetchWeatherByCoords(lastLoc.lat, lastLoc.lon, lastLoc.name, null, true)
+        } else {
+          fetchWeatherData(lastLoc.name)
+        }
         return
       }
       
-      // Otherwise, try to get user's current location
+      // For first-time users, start with default location immediately
+      // This prevents showing random IP-based locations
+      console.log('No saved location, loading default location first:', DEFAULT_LOCATION)
+      fetchWeatherData(DEFAULT_LOCATION)
+      
+      // Then try to get user's actual location in the background
       if ('geolocation' in navigator) {
-        try {
-          const position = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 5000,
-              maximumAge: 300000 // 5 minutes
-            })
+        console.log('Requesting geolocation permission...')
+        
+        // Request geolocation with reasonable timeout
+        const geolocationPromise = new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 15000, // 15 seconds for user to respond to permission prompt
+            maximumAge: 0,
+            enableHighAccuracy: true
           })
-          
+        })
+        
+        try {
+          const position = await geolocationPromise
           const { latitude, longitude } = position.coords
+          console.log('Got geolocation:', latitude, longitude)
+          
+          // Try to use Google's reverse geocoding for accurate location name
+          try {
+            // Wait for Google Maps to load (with timeout)
+            const googleLoadPromise = new Promise((resolve) => {
+              const checkGoogle = () => {
+                if (window.google?.maps?.Geocoder) {
+                  resolve(true)
+                } else {
+                  setTimeout(checkGoogle, 100)
+                }
+              }
+              checkGoogle()
+            })
+            
+            const googleTimeout = new Promise((resolve) => setTimeout(() => resolve(false), 2000))
+            const googleLoaded = await Promise.race([googleLoadPromise, googleTimeout])
+            
+            if (googleLoaded && window.google?.maps?.Geocoder) {
+              const geocoder = new window.google.maps.Geocoder()
+              const result = await new Promise((resolve) => {
+                geocoder.geocode(
+                  { location: { lat: latitude, lng: longitude } },
+                  (results, status) => {
+                    if (status === 'OK' && results && results.length > 0) {
+                      const bestResult = results.find(r => 
+                        r.types.includes('locality') || 
+                        r.types.includes('sublocality') ||
+                        r.types.includes('neighborhood')
+                      ) || results[0]
+                      
+                      resolve({
+                        name: bestResult.address_components[0]?.long_name || bestResult.formatted_address
+                      })
+                    } else {
+                      resolve(null)
+                    }
+                  }
+                )
+              })
+              
+              if (result?.name) {
+                console.log('Updating to Google geocoded location:', result.name)
+                fetchWeatherByCoords(latitude, longitude, result.name, null, true)
+                return
+              }
+            }
+          } catch (geoError) {
+            console.warn('Google geocoding failed:', geoError)
+          }
+          
+          // Fallback to coordinates if Google geocoding fails
+          console.log('Updating to coordinates-based location')
           fetchWeatherByCoords(latitude, longitude)
         } catch (error) {
-          // If geolocation fails, fall back to default location
-          console.log('Geolocation not available, using default location')
-          fetchWeatherData(DEFAULT_LOCATION)
+          // Geolocation failed, denied, or timed out - keep showing default location
+          console.log('Geolocation failed, keeping default location:', error.message)
+          // Don't do anything - default location is already loaded
         }
       } else {
-        // Geolocation not supported, use default
-        fetchWeatherData(DEFAULT_LOCATION)
+        console.log('Geolocation not supported, keeping default location')
       }
     }
     

@@ -18,7 +18,7 @@ const SearchBar = () => {
   const dropdownRef = useRef(null)
   const { fetchWeatherData, fetchWeatherByCoords } = useWeather()
   const { location, error: geoError, loading: geoLoading, getCurrentLocation } = useGeolocation()
-  const { isLoaded: googleLoaded, searchPlaces, getPlaceDetails } = useGooglePlaces()
+  const { isLoaded: googleLoaded, searchPlaces, getPlaceDetails, reverseGeocode } = useGooglePlaces()
 
   const fetchSuggestions = debounce(async (searchQuery) => {
     if (searchQuery.length < 2) {
@@ -206,10 +206,36 @@ const SearchBar = () => {
   }
 
   useEffect(() => {
-    if (location) {
-      fetchWeatherData(`${location.latitude},${location.longitude}`)
+    const handleLocationUpdate = async () => {
+      if (location) {
+        // Use Google's reverse geocoding to get accurate location name
+        if (googleLoaded && reverseGeocode) {
+          try {
+            const geocodedLocation = await reverseGeocode(location.latitude, location.longitude)
+            if (geocodedLocation) {
+              console.log('Google reverse geocoded location:', geocodedLocation)
+              // Use Google's location name with coordinates, preserving the name
+              fetchWeatherByCoords(
+                location.latitude, 
+                location.longitude, 
+                geocodedLocation.name,
+                null,
+                true // Preserve Google's location name
+              )
+              return
+            }
+          } catch (error) {
+            console.error('Google reverse geocoding failed:', error)
+          }
+        }
+        
+        // Fallback to coordinates if Google geocoding fails or isn't loaded
+        fetchWeatherData(`${location.latitude},${location.longitude}`)
+      }
     }
-  }, [location])
+    
+    handleLocationUpdate()
+  }, [location, googleLoaded, reverseGeocode])
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
