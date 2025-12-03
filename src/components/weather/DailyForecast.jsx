@@ -11,7 +11,7 @@ const DailyForecast = () => {
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50">
       <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-4">
-        7-Day Forecast
+        16-Day Forecast
       </h3>
       
       <div className="space-y-2 sm:space-y-3">

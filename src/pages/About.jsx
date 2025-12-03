@@ -17,8 +17,8 @@ const About = () => {
     },
     {
       icon: <WiStrongWind className="text-5xl text-cyan-500" />,
-      title: '7-Day Forecast',
-      description: 'Plan ahead with accurate weather forecasts for the week.'
+      title: '16-Day Forecast',
+      description: 'Plan ahead with accurate weather forecasts for up to 16 days.'
     },
     {
       icon: <WiHumidity className="text-5xl text-purple-500" />,
@@ -31,7 +31,7 @@ const About = () => {
     { name: 'React 18', category: 'Frontend Framework' },
     { name: 'Spring Boot 3', category: 'Backend Framework' },
     { name: 'Tailwind CSS', category: 'Styling' },
-    { name: 'WeatherAPI.com', category: 'Weather Data' },
+    { name: 'Open-Meteo', category: 'Weather Data' },
     { name: 'AQICN', category: 'Air Quality Data' },
     { name: 'Google Maps', category: 'Location Services' },
     { name: 'Vite', category: 'Build Tool' },
@@ -118,22 +118,22 @@ const About = () => {
 
         {/* Data Sources */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* WeatherAPI */}
+          {/* Open-Meteo */}
           <div className="bg-gradient-to-br from-blue-500 to-cyan-600 dark:from-blue-900 dark:to-cyan-950 rounded-2xl p-6 shadow-lg text-white">
             <h2 className="text-2xl font-bold mb-3">
               Weather Data
             </h2>
             <p className="text-blue-50 mb-4 leading-relaxed text-sm">
-              Comprehensive weather information including temperature, humidity, wind, pressure, and forecasts 
-              provided by WeatherAPI.com - a reliable weather data service trusted worldwide.
+              Comprehensive weather information including temperature, humidity, wind, pressure, and up to 16-day forecasts 
+              provided by Open-Meteo - a free, open-source weather API with high-quality data from national weather services.
             </p>
             <a 
-              href="https://www.weatherapi.com/" 
+              href="https://open-meteo.com/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 text-sm"
             >
-              Visit WeatherAPI.com
+              Visit Open-Meteo
               <FiExternalLink />
             </a>
           </div>
@@ -197,7 +197,7 @@ const About = () => {
 
       <footer className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm mt-auto py-6 border-t border-gray-200/50 dark:border-gray-700/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400">
-          <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
+          <p className="text-sm">Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Open-Meteo</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
           <p className="text-xs mt-2">© 2025 Weather AQI. All rights reserved.</p>
         </div>
       </footer>

@@ -28,7 +28,7 @@ export const WeatherProvider = ({ children }) => {
     try {
       const [weatherData, forecastData] = await Promise.all([
         getCurrentWeather(locationQuery),
-        getForecast(locationQuery, 7)
+        getForecast(locationQuery, 16)
       ])
       
       // Backend always merges AQICN data, so show AQICN as the source
@@ -55,7 +55,7 @@ export const WeatherProvider = ({ children }) => {
     try {
       const promises = [
         getWeatherByCoordinates(lat, lon),
-        getForecast(`${lat},${lon}`, 7)
+        getForecast(`${lat},${lon}`, 16)
       ]
       
       // If this is from an AQI station with UID, fetch the exact station's data

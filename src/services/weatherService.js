@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 
 const weatherApi = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // Increased from 10s to 30s
   headers: {
     'Content-Type': 'application/json'
   }
@@ -21,12 +21,28 @@ weatherApi.interceptors.request.use(
   }
 )
 
-// Response interceptor
+// Response interceptor with retry logic
 weatherApi.interceptors.response.use(
   (response) => {
     return response
   },
-  (error) => {
+  async (error) => {
+    const config = error.config
+    
+    // Retry on network errors or timeouts (max 2 retries)
+    if (!config || !config.retry) {
+      config.retry = 0
+    }
+    
+    if (config.retry < 2 && (error.code === 'ECONNABORTED' || error.message.includes('timeout') || error.message.includes('Network Error'))) {
+      config.retry += 1
+      console.log(`Retrying request (${config.retry}/2)...`)
+      
+      // Wait 1 second before retry
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      return weatherApi(config)
+    }
+    
     console.error('API Error:', error.response?.data || error.message)
     return Promise.reject(error)
   }
@@ -108,6 +124,41 @@ export const searchEnhanced = async (query) => {
 
 export const checkHealth = async () => {
   const response = await weatherApi.get('/weather/health')
+  return response.data
+}
+
+export const getUvIndex = async (location) => {
+  const response = await weatherApi.get('/weather/uv-index', {
+    params: { location }
+  })
+  return response.data
+}
+
+export const getPrecipitationMinutely = async (location) => {
+  const response = await weatherApi.get('/weather/precipitation-minutely', {
+    params: { location }
+  })
+  return response.data
+}
+
+export const getPollenForecast = async (location) => {
+  const response = await weatherApi.get('/weather/pollen', {
+    params: { location }
+  })
+  return response.data
+}
+
+export const getHealthScore = async (location) => {
+  const response = await weatherApi.get('/weather/health-score', {
+    params: { location }
+  })
+  return response.data
+}
+
+export const getWeatherInsights = async (location) => {
+  const response = await weatherApi.get('/weather/insights', {
+    params: { location }
+  })
   return response.data
 }
 

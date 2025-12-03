@@ -8,6 +8,11 @@ import DailyForecast from '../components/weather/DailyForecast'
 import AQICard from '../components/aqi/AQICard'
 import SunriseSunset from '../components/weather/SunriseSunset'
 import WindCompass from '../components/weather/WindCompass'
+import UvIndex from '../components/weather/UvIndex'
+import PrecipitationRadar from '../components/weather/PrecipitationRadar'
+import HealthScore from '../components/health/HealthScore'
+import WeatherInsights from '../components/health/WeatherInsights'
+import PollenForecast from '../components/health/PollenForecast'
 import SkeletonLoader from '../components/common/SkeletonLoader'
 import ErrorMessage from '../components/common/ErrorMessage'
 
@@ -37,10 +42,23 @@ const Dashboard = () => {
             {/* Main Weather Card */}
             <CurrentWeather />
             
+            {/* Health Score & AI Insights */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <HealthScore />
+              <WeatherInsights />
+            </div>
+            
             {/* Hourly Forecast & AQI */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <HourlyForecast />
               <AQICard />
+            </div>
+            
+            {/* UV Index, Precipitation & Pollen */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <UvIndex />
+              <PrecipitationRadar />
+              <PollenForecast />
             </div>
             
             {/* Wind & Sun/Moon Info */}
@@ -49,7 +67,7 @@ const Dashboard = () => {
               <SunriseSunset />
             </div>
             
-            {/* 7-Day Forecast */}
+            {/* 16-Day Forecast */}
             <DailyForecast />
           </div>
         )}
@@ -102,7 +120,7 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="text-center text-gray-600 dark:text-gray-400">
-              <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
+              <p className="text-sm">Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Open-Meteo</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
               <p className="text-xs mt-1">© 2025 Weather AQI. All rights reserved.</p>
             </div>
           </div>

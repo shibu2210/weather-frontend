@@ -32,7 +32,7 @@ const Terms = () => {
           
           <TermSection 
             title="3. Data Accuracy"
-            content="While we strive to provide accurate weather and air quality information, we cannot guarantee the accuracy, completeness, or timeliness of the data. Weather data is provided by WeatherAPI.com and air quality data by AQICN. This information should not be relied upon for critical decisions without verification from official sources."
+            content="While we strive to provide accurate weather and air quality information, we cannot guarantee the accuracy, completeness, or timeliness of the data. Weather data is provided by Open-Meteo and air quality data by AQICN. This information should not be relied upon for critical decisions without verification from official sources."
           />
           
           <TermSection 
@@ -42,12 +42,12 @@ const Terms = () => {
           
           <TermSection 
             title="5. Intellectual Property"
-            content="The service and its original content, features, and functionality are owned by Weather AQI and are protected by international copyright, trademark, and other intellectual property laws. Weather data is provided by WeatherAPI.com and air quality data by AQICN, both subject to their respective terms of service."
+            content="The service and its original content, features, and functionality are owned by Weather AQI and are protected by international copyright, trademark, and other intellectual property laws. Weather data is provided by Open-Meteo and air quality data by AQICN, both subject to their respective terms of service."
           />
           
           <TermSection 
             title="6. Third-Party Services"
-            content="Our service uses WeatherAPI.com for weather data and AQICN for air quality data. Your use of this data is subject to their respective terms of service and privacy policies. We are not responsible for the content or practices of third-party services."
+            content="Our service uses Open-Meteo for weather data and AQICN for air quality data. Your use of this data is subject to their respective terms of service and privacy policies. We are not responsible for the content or practices of third-party services."
           />
           
           <TermSection 
@@ -101,7 +101,7 @@ const Terms = () => {
 
       <footer className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm mt-auto py-6 border-t border-gray-200/50 dark:border-gray-700/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400">
-          <p className="text-sm">Weather data by <a href="https://www.weatherapi.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">WeatherAPI.com</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
+          <p className="text-sm">Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Open-Meteo</a> • Air quality data by <a href="https://aqicn.org/" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">AQICN</a></p>
           <p className="text-xs mt-2">© 2025 Weather AQI. All rights reserved.</p>
         </div>
       </footer>
