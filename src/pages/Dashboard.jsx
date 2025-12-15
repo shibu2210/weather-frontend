@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useWeather } from '../context/WeatherContext'
+import { getPollenForecast } from '../services/weatherService'
 import Header from '../components/common/Header'
 import SearchBar from '../components/search/SearchBar'
 import CurrentWeather from '../components/weather/CurrentWeather'
@@ -17,7 +19,34 @@ import SkeletonLoader from '../components/common/SkeletonLoader'
 import ErrorMessage from '../components/common/ErrorMessage'
 
 const Dashboard = () => {
-  const { loading, error, refreshWeather } = useWeather()
+  const { loading, error, refreshWeather, location } = useWeather()
+  const [hasPollenData, setHasPollenData] = useState(false)
+  
+  // Check if pollen data is available for this location
+  useEffect(() => {
+    const checkPollenAvailability = async () => {
+      if (!location) {
+        setHasPollenData(false)
+        return
+      }
+      
+      try {
+        const locationQuery = location.lat && location.lon 
+          ? `${location.lat},${location.lon}` 
+          : location.name
+        const data = await getPollenForecast(locationQuery)
+        // Pollen data is available if we get valid data (not unavailable)
+        const isAvailable = data && 
+          data.overallRisk !== 'Data unavailable' && 
+          data.overallRisk !== 'Unknown'
+        setHasPollenData(isAvailable)
+      } catch (err) {
+        setHasPollenData(false)
+      }
+    }
+    
+    checkPollenAvailability()
+  }, [location])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-cyan-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors flex flex-col">
@@ -54,12 +83,21 @@ const Dashboard = () => {
               <AQICard />
             </div>
             
-            {/* UV Index, Precipitation & Pollen */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <UvIndex />
-              <PrecipitationRadar />
-              <PollenForecast />
-            </div>
+            {/* UV Index, Precipitation & Pollen (conditional layout) */}
+            {hasPollenData ? (
+              // European locations: 3 columns with Pollen
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <UvIndex />
+                <PrecipitationRadar />
+                <PollenForecast />
+              </div>
+            ) : (
+              // Non-European locations: 2 columns without Pollen
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <UvIndex />
+                <PrecipitationRadar />
+              </div>
+            )}
             
             {/* Wind & Sun/Moon Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

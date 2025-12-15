@@ -38,31 +38,9 @@ const PollenForecast = () => {
     )
   }
 
-  if (!pollenData || pollenData.overallRisk === 'Data unavailable') {
-    return (
-      <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-gradient-to-br from-gray-400 to-slate-500 rounded-xl shadow-lg">
-            <FiWind className="text-2xl text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">
-              Pollen Forecast
-            </h3>
-            <p className="text-xs text-gray-600 dark:text-gray-400">Not available for this location</p>
-          </div>
-        </div>
-        <div className="text-center py-6">
-          <div className="text-4xl mb-3">🌸</div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Pollen data unavailable
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed px-4">
-            Pollen monitoring is limited to certain regions. Your location may not have coverage yet.
-          </p>
-        </div>
-      </div>
-    )
+  // Hide completely if pollen data is unavailable (only available in Europe)
+  if (!pollenData || pollenData.overallRisk === 'Data unavailable' || pollenData.overallRisk === 'Unknown') {
+    return null
   }
 
   const getRiskGradient = (risk) => {

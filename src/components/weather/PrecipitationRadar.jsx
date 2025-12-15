@@ -5,7 +5,7 @@ import { WiRain, WiRaindrops } from 'react-icons/wi'
 import { FiDroplet, FiClock } from 'react-icons/fi'
 
 const PrecipitationRadar = () => {
-  const { location } = useWeather()
+  const { location, weather } = useWeather()
   const [precipData, setPrecipData] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -29,6 +29,15 @@ const PrecipitationRadar = () => {
 
     fetchPrecipData()
   }, [location])
+  
+  // Check if current weather indicates rain
+  const isCurrentlyRaining = () => {
+    if (!weather?.current) return false
+    const condition = weather.current.condition?.text?.toLowerCase() || ''
+    const precipMm = weather.current.precip_mm || 0
+    const rainKeywords = ['rain', 'drizzle', 'shower', 'thunderstorm', 'storm', 'precipitation']
+    return rainKeywords.some(keyword => condition.includes(keyword)) || precipMm > 0
+  }
 
   if (loading) {
     return (
@@ -82,8 +91,13 @@ const PrecipitationRadar = () => {
   })
 
   const maxPrecip = Math.max(...relevantPrecip, 0.1)
-  const willRain = relevantPrecip.some(p => p > 0.1)
+  const forecastShowsRain = relevantPrecip.some(p => p > 0)
+  const currentRaining = isCurrentlyRaining()
+  // Show rain if either forecast predicts it OR current weather shows rain
+  const willRain = forecastShowsRain || currentRaining
   const totalPrecip = relevantPrecip.reduce((sum, p) => sum + (p || 0), 0)
+  // If currently raining but forecast shows 0, use current precip value
+  const displayTotal = totalPrecip > 0 ? totalPrecip : (currentRaining ? (weather?.current?.precip_mm || 0.1) : 0)
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 dark:from-gray-800 dark:via-gray-850 dark:to-gray-900 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-100 dark:border-gray-700 group">
@@ -127,17 +141,19 @@ const PrecipitationRadar = () => {
                 {willRain ? '🌧️' : '☀️'}
               </div>
               <p className="text-lg font-bold text-white mb-1">
-                {willRain ? 'Rain Expected' : 'Clear Skies'}
+                {currentRaining ? 'Currently Raining' : (forecastShowsRain ? 'Rain Expected' : 'Clear Skies')}
               </p>
               <p className="text-sm text-white/80">
-                {willRain ? 'Next hour' : 'No rain in next hour'}
+                {currentRaining 
+                  ? 'Rain detected in your area' 
+                  : (forecastShowsRain ? 'Next hour' : 'No rain in next hour')}
               </p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-black text-white">
-                {totalPrecip.toFixed(1)}
+                {displayTotal.toFixed(1)}
               </div>
-              <div className="text-xs text-white/80">mm total</div>
+              <div className="text-xs text-white/80">mm {currentRaining && !forecastShowsRain ? 'now' : 'total'}</div>
             </div>
           </div>
         </div>
